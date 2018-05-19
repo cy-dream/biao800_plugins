@@ -24,7 +24,7 @@ else:
 #以下是用户编写代码区域
     if(PageType=="Save"):
         if(LabelArray['标题']):
-            LabelArray['标题']='这是Python插件处理的标题'
+            LabelArray['标题']='这是Python插件处理的标题AAA'
     else:
         LabelArray['Html']='当前页面的网址为:'+ LabelUrl +"\r\n页面类型为:" + PageType + "\r\nCookies数据为:"+LabelCookie+"\r\n接收到的数据是:" + LabelArray['Html']
         
