@@ -1,16 +1,10 @@
 import requests
 from lxml import etree
 
-def get_data():
-	response = requests.get('https://www.chinabidding.cn/cha/A/7.html', verify=False)
-	if response.status_code == 200:
-		html = etree.HTML(response.text)
-		tag_lis = html.xpath('//ul[@class="dq_rmc"]/li/a')
-		key_word = list()
-		for li in tag_lis:
-			key_word.extend(li.xpath('./text()'))
-		print(key_word)
-
+'''
+	获取采购与招标网的，采购招标热门关键字
+	run: python download_caizhao_keyword.py
+'''
 def create_url():
 	letter = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
 					 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
