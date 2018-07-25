@@ -155,3 +155,4 @@ if __name__ == '__main__':
     if con_issue_list:
         send_emails(con_issue_list)
         del_source_issume_email(con_issue_list)
+    logger.info('Finish -----------')
