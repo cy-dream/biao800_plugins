@@ -22,17 +22,21 @@ def email_receive_login():
         server.user('18713823671@163.com')
         server.pass_('li258369')       
     except Exception as e:
-        logger.error('Send Faild emails:', exc_info=True)
+        logger.error('def email_receive_login ERROR: ', exc_info=True)
     return server
 
 def email_send_login():
-    smtp_server = 'smtp.163.com'
-    server = smtplib.SMTP(smtp_server, 25)
-    #server.set_debuglevel(1)
-    user = '18713823671@163.com'
-    passward = 'li258369'
-    server.login(user, passward)
-    return server
+    try:
+        smtp_server = 'smtp.163.com'
+        server = smtplib.SMTP_SSL()
+        server.connect(smtp_server, 587)
+        #server.set_debuglevel(1)
+        user = '18713823671@163.com'
+        passward = 'li258369'
+        server.login(user, passward)
+        return server
+    except Exception as e:
+        logger.err('def email_send_login ERROR: ', exc_info=True)
 
 def get_all_mails_and_id():
     mails_msg_list = []
@@ -70,7 +74,7 @@ def judge(content_list):
             con = dict([item.split('：') for item in con.split(';')])
             num = set(con.values())
             #if len(num) == 1 and '0' in num:
-            if len(num) > 1:
+            if len(num) < 3:
                 logger.debug('run faild item:'+str(con))
                 con_issue_list.append(item)
     except Exception as e:
@@ -108,6 +112,7 @@ def parser_info(msgs, indent=0):
         except Exception as e:
             logger.error('Send print_info emails:', exc_info=True)
             pass
+        break
 
 def send_emails(emails):
     server = email_send_login()
