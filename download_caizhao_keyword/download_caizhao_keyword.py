@@ -31,7 +31,7 @@ def get_keyword(html):
 		keyword_list = list()
 		for li in tag_lis:
 			keyword_list.extend(li.xpath('./text()'))
-			write_data(keyword_list)
+		write_data(keyword_list)
 
 
 def write_data(keyword_list):
