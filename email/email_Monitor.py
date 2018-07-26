@@ -1,4 +1,5 @@
 import re
+import time
 import poplib
 import base64
 import smtplib
@@ -34,9 +35,9 @@ def email_send_login():
         user = '18713823671@163.com'
         passward = 'li258369'
         server.login(user, passward)
-        return server
     except Exception as e:
         logger.err('def email_send_login ERROR: ', exc_info=True)
+        return server
 
 def get_all_mails_and_id():
     mails_msg_list = []
@@ -126,6 +127,7 @@ def send_emails(emails):
             content['From'] = '18713823671@163.com'
             content['To']=','.join(to)
             server.sendmail('18713823671@163.com',to,content.as_string())
+            time.sleep(3)
             num += 1         
         except Exception as e:
             logger.error('Send Faild Emails:', exc_info=True)
@@ -151,7 +153,9 @@ def del_source_issume_email(con_issue_list):
 if __name__ == '__main__':
     msg = get_all_mails_and_id()
     parser_info(msg)
+    logger.info('content_list NUMS: {}'.format(len(content_list)))
     con_issue_list = judge(content_list)
+    logger.info('con_issue_list NUMS: {}'.format(len(con_issue_list)))
     if con_issue_list:
         send_emails(con_issue_list)
         del_source_issume_email(con_issue_list)
