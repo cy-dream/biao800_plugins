@@ -1,5 +1,6 @@
 import re
 import time
+import yaml
 import poplib
 import base64
 import smtplib
@@ -9,35 +10,41 @@ from email.header import decode_header
 from email.utils import parseaddr
 from email.mime.text import MIMEText
 
+with open('email_conf.yml') as config:
+    param = yaml.load(config)
+
 logging.basicConfig(level=logging.INFO,
                     filename='email_Monitor.log',
                     datefmt='%Y-%m-%d %H:%M:%S', 
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger('Process Maintor')
 
+
 def email_receive_login():
     try:
-        pop3_server = 'pop.163.com'
+        pop3_server = param['receive_message']['receive_pop']
         server = poplib.POP3(pop3_server)
         #server.set_debuglevel(1)
-        server.user('18713823671@163.com')
-        server.pass_('li258369')       
+        server.user(param['receive_message']['receive_account'])
+        server.pass_(param['receive_message']['receive_password'])
+        return server    
     except Exception as e:
         logger.error('def email_receive_login ERROR: ', exc_info=True)
-    return server
+
 
 def email_send_login():
     try:
-        smtp_server = 'smtp.163.com'
+        smtp_server = param['send_message']['send_smtp']
         server = smtplib.SMTP_SSL()
         server.connect(smtp_server, 587)
         #server.set_debuglevel(1)
-        user = '18713823671@163.com'
-        passward = 'li258369'
+        user = param['send_message']['send_account']
+        passward = param['send_message']['send_password']
         server.login(user, passward)
-    except Exception as e:
-        logger.err('def email_send_login ERROR: ', exc_info=True)
         return server
+    except Exception as e:
+        logger.error('def email_send_login ERROR: ', exc_info=True)
+        
 
 def get_all_mails_and_id():
     mails_msg_list = []
@@ -53,16 +60,16 @@ def get_all_mails_and_id():
             pass
         msg = Parser().parsestr(msg_content)
         mails_msg_list.append({'msg':msg, '_id':i})
-        #if i == 1300:
-        #    break
     server.quit()
     return mails_msg_list
+
 
 def decode_str(s):
     value, charset = decode_header(s)[0]
     if charset:
         value = value.decode(charset)
     return value
+
 
 def judge(content_list):
     con_issue_list = list()
@@ -75,13 +82,14 @@ def judge(content_list):
             con = dict([item.split('：') for item in con.split(';')])
             num = set(con.values())
             #if len(num) == 1 and '0' in num:
-            if len(num) < 3:
+            if len(num) < 5:
                 logger.debug('run faild item:'+str(con))
                 con_issue_list.append(item)
     except Exception as e:
         logger.error('Faild to judge result', exc_info=True)
         pass
     return con_issue_list
+
 
 #parser email text
 content_list = list()
@@ -115,18 +123,19 @@ def parser_info(msgs, indent=0):
             pass
         break
 
+
 def send_emails(emails):
     server = email_send_login()
     num = 0
     for email in emails:
         try:
-            to = ['834820272@qq.com']
+            to = param['to_user']
             # MIMEText表示邮件发送具体内容
             content = MIMEText(email['content_text'])
             content['Subject'] = email['subject']
-            content['From'] = '18713823671@163.com'
+            content['From'] = param['send_message']['send_account']
             content['To']=','.join(to)
-            server.sendmail('18713823671@163.com',to,content.as_string())
+            server.sendmail(param['send_message']['send_account'],to,content.as_string())
             time.sleep(3)
             num += 1         
         except Exception as e:
@@ -135,6 +144,7 @@ def send_emails(emails):
     logger.info('def send_emails -- Email Success Nums: {}'.format(num))
     # close email box
     server.close()
+ 
         
 def del_source_issume_email(con_issue_list):
     server = email_receive_login()

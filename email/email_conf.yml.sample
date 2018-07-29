@@ -1,0 +1,12 @@
+receive_message:
+  receive_account: '18713823671@163.com'
+  receive_password: 'xxxxxx'
+  receive_pop:  'pop.163.com'
+
+send_message:
+  send_account: '18713823671@163.com'
+  send_password: 'xxxxxx'
+  send_smtp:  'smtp.163.com'
+
+to_user:
+  ['834820272@qq.com']
